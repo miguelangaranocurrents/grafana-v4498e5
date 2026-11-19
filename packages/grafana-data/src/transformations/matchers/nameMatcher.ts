@@ -116,7 +116,9 @@ function fieldNameFallback(fields: Set<string>) {
     };
   } else if (fields.has('Time') || fields.has('time')) {
     fallback = (field: Field, frame: DataFrame) => {
-      return frame.meta?.typeVersion == null && field.type === FieldType.time;
+      // Only the frame's primary time field may match by type; otherwise every time field would be caught.
+      const primaryTimeField = frame.fields.find((f) => f.type === FieldType.time);
+      return frame.meta?.typeVersion == null && field === primaryTimeField;
     };
   }
 
